@@ -12,6 +12,6 @@ RUN apt install -qy geth bind9-host curl tar \
 
 ENV TERM=xterm
 ADD genesis.json /opt/
-RUN geth init opt/genesis.json
+#RUN geth init opt/genesis.json
 ADD start.sh /opt/
 CMD ["/opt/start.sh"]
