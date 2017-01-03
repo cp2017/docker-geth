@@ -10,4 +10,6 @@ RUN apt-get update \
  && apt-get update \
  && apt install -qy geth bind9-host
 
-CMD ["geth", "--rpc", "--rpcapi", "db,eth,net,web3,personal,shh", "--shh"]
+ADD start.sh /opt/
+VOLUME ["/data/"]
+CMD ["/opt/start.sh"]
