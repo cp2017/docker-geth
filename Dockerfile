@@ -11,7 +11,7 @@ RUN apt-get update \
  && apt-get update \
  && apt install -qy geth bind9-host
 
-ADD db /opt/
+ADD db /opt/db/
 ADD start.sh /opt/
 VOLUME ["/data/"]
 CMD ["/opt/start.sh"]
