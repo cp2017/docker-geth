@@ -2,7 +2,8 @@ FROM ubuntu:16.04
 MAINTAINER "Christian Kniep <christian@qnib.org>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ENV TERM=xterm
+ENV TERM=xterm \
+    GETH_TEST_DATABASE=false
 
 RUN apt-get update \
  && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 923F6CA9 \
@@ -10,6 +11,7 @@ RUN apt-get update \
  && apt-get update \
  && apt install -qy geth bind9-host
 
+ADD db /opt/
 ADD start.sh /opt/
 VOLUME ["/data/"]
 CMD ["/opt/start.sh"]
