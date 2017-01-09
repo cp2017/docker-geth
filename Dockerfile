@@ -12,6 +12,14 @@ RUN apt-get update \
  && apt install -qy geth bind9-host
 
 ADD db /opt/db/
+ADD genesis.json \
+    baseContract.sol \
+    contracts.sol \
+    payment.sol \
+    RegisterFetchHashContract.sol \
+    ServiceRegisteryContract.sol \
+    checkAllBalances.js \
+    /opt/
 ADD start.sh /opt/
 VOLUME ["/data/"]
 CMD ["/opt/start.sh"]
