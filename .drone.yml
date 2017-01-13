@@ -1,9 +1,13 @@
-publish:
-  docker:
-    username: $$DOCKER_USER
-    password: $$DOCKER_PASSWORD
-    email: $$DOCKER_EMAIL
-    repo: cp2017/geth
-    tag: latest
-    file: Dockerfile
-    insecure: false
+pipeline:
+  check:
+    image: cp2017/geth:latest
+    commands:
+      - sleep 5
+      - geth --exec 'eth.accounts' attach http://localhost:8545
+services:
+  geth:
+   image: cp2017/geth:latest
+   container_name: geth
+   environment:
+    - GETH_TEST_DATABASE=true
+    - GETH_BOOTSTRAP=false

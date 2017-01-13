@@ -9,6 +9,7 @@ fi
 geth --datadir /data/db --nodiscover --port 30301 --rpc --rpcapi db,eth,net,web3,personal,shh --shh --rpcaddr 0.0.0.0 --rpccorsdomain "*" --rpcport 8545 --ipcpath /root/.ethereum/geth.ipc --ipcapi "db,eth,net,web3" &
 
 if [ "X${GETH_BOOTSTRAP}" == "Xtrue" ];then
+    sleep 3
     /opt/bootstrap.sh
 fi
 fg
