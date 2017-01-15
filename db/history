@@ -165,3 +165,73 @@ userregistry.setUserContractAddress("0xb50856af1f3fc6d2c97ac7bc6642f3662feb398b"
 miner.stop()
 userregistry.getUserContractAddress()
 userregistry
+address(0)
+var userregistryContract = web3.eth.contract([{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"userContracts","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"userContractAdd","type":"address"}],"name":"setUserContractAddress","outputs":[],"payable":false,"type":"function"},{"inputs":[],"type":"constructor","payable":true}]);
+var userregistry = userregistryContract.new(
+   {
+     from: web3.eth.accounts[0], 
+     data: '0x60606040525b5b6101d0806100146000396000f360606040526000357c0100000000000000000000000000000000000000000000000000000000900480630687b785146100475780631d7e37ad1461008e57610042565b610002565b346100025761006260048080359060200190919050506100ab565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34610002576100a960048080359060200190919050506100e3565b005b600060005060205280600052604060002060009150909054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600073ffffffffffffffffffffffffffffffffffffffff16600060005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614156101cc5780600060005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548173ffffffffffffffffffffffffffffffffffffffff02191690836c010000000000000000000000009081020402179055505b5b5056', 
+     gas: '4700000'
+   }, function (e, contract){
+    console.log(e, contract);
+    if (typeof contract.address !== 'undefined') {
+         console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
+    }
+ })
+var userregistry = userregistryContract.new(
+   {
+     from: web3.eth.accounts[0], 
+     data: '0x60606040525b5b6101d0806100146000396000f360606040526000357c0100000000000000000000000000000000000000000000000000000000900480630687b785146100475780631d7e37ad1461008e57610042565b610002565b346100025761006260048080359060200190919050506100ab565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34610002576100a960048080359060200190919050506100e3565b005b600060005060205280600052604060002060009150909054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600073ffffffffffffffffffffffffffffffffffffffff16600060005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614156101cc5780600060005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548173ffffffffffffffffffffffffffffffffffffffff02191690836c010000000000000000000000009081020402179055505b5b5056', 
+     gas: '4700000'
+   }, function (e, contract){
+    console.log(e, contract);
+    if (typeof contract.address !== 'undefined') {
+         console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
+    }
+ }per)
+var userregistryContract = web3.eth.contract([{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"userContracts","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"userContractAdd","type":"address"}],"name":"setUserContractAddress","outputs":[],"payable":false,"type":"function"},{"inputs":[],"type":"constructor","payable":true}]);
+var userregistry = userregistryContract.new(
+   {
+     from: web3.eth.accounts[0], 
+     data: '0x60606040525b5b6101d0806100146000396000f360606040526000357c0100000000000000000000000000000000000000000000000000000000900480630687b785146100475780631d7e37ad1461008e57610042565b610002565b346100025761006260048080359060200190919050506100ab565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34610002576100a960048080359060200190919050506100e3565b005b600060005060205280600052604060002060009150909054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600073ffffffffffffffffffffffffffffffffffffffff16600060005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614156101cc5780600060005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548173ffffffffffffffffffffffffffffffffffffffff02191690836c010000000000000000000000009081020402179055505b5b5056', 
+     gas: '4700000'
+   }, function (e, contract){
+    console.log(e, contract);
+    if (typeof contract.address !== 'undefined') {
+         console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
+    }
+ })
+miner.start()
+miner.stop()
+userregistery.setUserContractAddress("0x9edeb78f63691af2eeed523d74e882f38ba59aae")
+userregistry.setUserContractAddress("0x9edeb78f63691af2eeed523d74e882f38ba59aae")
+eth.defaultAccount =eth.coinbase
+userregistry.setUserContractAddress("0x9edeb78f63691af2eeed523d74e882f38ba59aae")
+miner.start()
+miner.stop()
+userregistry.userContracts("0x9edeb78f63691af2eeed523d74e882f38ba59aae")
+userregistry.setUserContractAddress("0x9edeb78f63691af2eeed523d74e882f38ba59aae",{gas:5000000})
+miner.start()
+miner.stop()
+userregistry.userContracts("0x9edeb78f63691af2eeed523d74e882f38ba59aae")
+eth.accounts
+eth.defaultAccount = eth.coibase
+eth.defaultAccount = eth.coinbase
+var userregistryContract = web3.eth.contract([{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"userContracts","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"userContractAdd","type":"address"}],"name":"setUserContractAddress","outputs":[],"payable":false,"type":"function"},{"inputs":[],"type":"constructor","payable":true}]);
+var userregistry = userregistryContract.new(
+   {
+     from: web3.eth.accounts[0], 
+     data: '0x60606040525b5b6101d0806100146000396000f360606040526000357c0100000000000000000000000000000000000000000000000000000000900480630687b785146100475780631d7e37ad1461008e57610042565b610002565b346100025761006260048080359060200190919050506100ab565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34610002576100a960048080359060200190919050506100e3565b005b600060005060205280600052604060002060009150909054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600073ffffffffffffffffffffffffffffffffffffffff16600060005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614156101cc5780600060005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548173ffffffffffffffffffffffffffffffffffffffff02191690836c010000000000000000000000009081020402179055505b5b5056', 
+     gas: '4700000'
+   }, function (e, contract){
+    console.log(e, contract);
+    if (typeof contract.address !== 'undefined') {
+         console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
+    }
+ })
+miner.start()
+miner.stop()
+userregistry.setUserContractAddress("0x3a5fa799b9198f92b38c70b4eb8eadac2fefa319")
+miner.start()
+miner.stop()
+userregistry.userContracts(eth.coinbase)
