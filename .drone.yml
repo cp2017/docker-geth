@@ -1,13 +1,11 @@
 pipeline:
-  check:
-    image: cp2017/geth:latest
-    commands:
-      - sleep 5
-      - geth --exec 'eth.accounts' attach http://localhost:8545
-services:
-  geth:
-   image: cp2017/geth:latest
-   container_name: geth
-   environment:
-    - GETH_TEST_DATABASE=true
-    - GETH_BOOTSTRAP=false
+  docker:
+    image: plugins/docker
+    repo: cp2017/geth
+    tags:
+     - latest
+     - ${DRONE_BUILD_NUMBER}
+  slack:
+    image: plugins/slack
+    channel: drone
+    username: drone
