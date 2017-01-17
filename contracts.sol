@@ -16,6 +16,12 @@ contract baseContract{
     			_;
   		}
 	}
+	
+    modifier costs(uint price) {
+        if (msg.value >= price) {
+            _;
+        }
+    }
 
 	function kill() onlyOwner{
   		suicide(owner);
@@ -43,9 +49,13 @@ contract Service is baseContract{
 		servicePrice = _price;
 	}
 
-	function consume(bytes32 _publicKey){
-		if(users[msg.sender].publicKey == 0){
-			users[msg.sender] = user({
+	function setPublicKey(bytes32 _publicKey) onlyOwner{
+		publicKey = _publicKey;
+	}
+
+	function consume(bytes32 _publicKey, address userAddress) payable costs(servicePrice){
+		if(users[userAddress].publicKey == 0){
+			users[userAddress] = user({
 	   			publicKey:_publicKey,
 	   			lastUpdate:now,
 	   			countUsage:1,
@@ -53,33 +63,34 @@ contract Service is baseContract{
 			usersCount+=1;
 		}
 		else{
-			users[msg.sender].lastUpdate = now;
-			users[msg.sender].countUsage += 1;
+			users[userAddress].lastUpdate = now;
+			users[userAddress].countUsage += 1;
 		}
   	}
-	
-       // payable function:
-        address public sendingAddress;
-        uint public sendingMoney;
-        function getMoney(address providerAddress) payable {
-                sendingAddress = providerAddress;
-                sendingMoney = msg.value;
-        }
-    
-         function sendMoney() {
-               if (!sendingAddress.send(sendingMoney)) throw;        
-       }
-	
+
+    address public sendingAddress;
+    uint public sendingMoney;
+    function getMoney(address providerAddress) payable {
+        sendingAddress = providerAddress;
+        sendingMoney = msg.value;
+    }
+
+    function sendMoney() {
+    	if (!sendingAddress.send(sendingMoney)) throw;
+    }
+
+	function withdraw()onlyOwner {
+		//owner.send();
+	}
+
 }
 
 contract User is baseContract {
 
-	address public usrAdd;
 	bytes32 public publicKey;
 
 	mapping(address => ServiceInfo) public myConsumedServices;
 	mapping(address => ServiceInfo) public myProvidedServices;
-
 
     struct ServiceInfo{
         address serviceAddress;
@@ -88,13 +99,15 @@ contract User is baseContract {
         uint256 countUsage;
     }
 
-    function User(bytes32 _publicKey){
-        usrAdd = msg.sender;
-        publicKey = _publicKey;
+    function User(){
+        owner = msg.sender;
     }
 
-    function consumeService(address _serviceAddress) onlyOwner{
-        // if service already not exist, just update usage information
+	function setPublicKey(bytes32 _publicKey) onlyOwner{
+		publicKey = _publicKey;
+	}
+	//this function should be payable
+    function consumeService(address _serviceAddress) onlyOwner payable{
         if(myConsumedServices[_serviceAddress].serviceAddress == 0){
             myConsumedServices[_serviceAddress] = ServiceInfo({
                 serviceAddress:_serviceAddress,
@@ -108,7 +121,7 @@ contract User is baseContract {
             myConsumedServices[_serviceAddress].countUsage++;
         }
         Service service = Service(_serviceAddress);
-//        _serviceAddress.send(service.servicePrice);
-//        myConsumedServices[_serviceAddress].publicKey = service.publicKey;
+		service.consume.value(service.servicePrice())(publicKey,owner); //not always working
+        myConsumedServices[_serviceAddress].publicKey = service.publicKey();
     }
 }
