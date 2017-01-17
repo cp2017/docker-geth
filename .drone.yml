@@ -1,9 +1,11 @@
-publish:
+pipeline:
   docker:
-    username: $$DOCKER_USER
-    password: $$DOCKER_PASSWORD
-    email: $$DOCKER_EMAIL
+    image: plugins/docker
     repo: cp2017/geth
-    tag: latest
-    file: Dockerfile
-    insecure: false
+    tags:
+     - latest
+     - ${DRONE_BUILD_NUMBER}
+  slack:
+    image: plugins/slack
+    channel: drone
+    username: drone

@@ -20,6 +20,8 @@ ADD genesis.json \
     ServiceRegisteryContract.sol \
     checkAllBalances.js \
     /opt/
-ADD start.sh /opt/
+ADD start.sh \
+    bootstrap.sh \
+    /opt/
 VOLUME ["/data/"]
 CMD ["/opt/start.sh"]
