@@ -37,6 +37,7 @@ contract Service is baseContract{
 	uint public usersCount;
 	bytes32 public publicKey;
 	bytes32 public ipfsHash;
+	uint public locked;
 
 	mapping (address => user ) public users;
 	struct user{
@@ -76,19 +77,8 @@ contract Service is baseContract{
 		}
   	}
 
-    address public sendingAddress;
-    uint public sendingMoney;
-    function getMoney(address providerAddress) payable {
-        sendingAddress = providerAddress;
-        sendingMoney = msg.value;
-    }
-
-    function sendMoney() {
-    	if (!sendingAddress.send(sendingMoney)) throw;
-    }
-
 	function withdraw()onlyOwner {
-		//owner.send();
+		if (!owner.send(this.balance)) throw;
 	}
 
 }
@@ -96,7 +86,7 @@ contract Service is baseContract{
 contract User is baseContract {
 
 	bytes32 public publicKey;
-	uint public money;
+	uint public eth;
 	
 	uint public consumedServicesCount;
 	uint public providedServicesCount;
@@ -104,8 +94,8 @@ contract User is baseContract {
 	mapping(address => ServiceInfo) public myConsumedServices;
 	mapping(address => ServiceInfo) public myProvidedServices;
 	
-	mapping(uint => address) public consumedService;
-	mapping(uint => address) public providedService;
+	mapping(uint => address) public consumedServices;
+	mapping(uint => address) public providedServices;
 
     struct ServiceInfo{
         address serviceAddress;
@@ -122,8 +112,9 @@ contract User is baseContract {
 		publicKey = _publicKey;
 	}
 	function fund() onlyOwner payable{
-	    money += msg.value;    
+	    eth += msg.value;    
 	}
+    
     function consumeService(address _serviceAddress) onlyOwner {
         if(myConsumedServices[_serviceAddress].serviceAddress == 0){
             myConsumedServices[_serviceAddress] = ServiceInfo({
@@ -133,6 +124,7 @@ contract User is baseContract {
                 countUsage:1
             });
             consumedServicesCount++;
+            consumedServices[consumedServicesCount] = _serviceAddress;
         }
         else{
             myConsumedServices[_serviceAddress].lastUsage = now;
@@ -142,5 +134,15 @@ contract User is baseContract {
 		service.consume.value(service.servicePrice())(publicKey,owner); //not always working
         myConsumedServices[_serviceAddress].publicKey = service.publicKey();
     }
+    
+    function deployServiceContract() onlyOwner {
+        Service newService = new Service();
+        myProvidedServices[newService] = ServiceInfo({
+                serviceAddress:newService,
+                publicKey : 0,
+                lastUsage:0,
+                countUsage:0
+        });
+        providedServicesCount++;
+    }
 }
-
