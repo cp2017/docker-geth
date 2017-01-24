@@ -21,6 +21,9 @@ contract baseContract{
         if (msg.value >= price) {
             _;
         }
+        else{
+            throw;
+        }
     }
 
 	function kill() onlyOwner{
@@ -33,8 +36,9 @@ contract Service is baseContract{
 	uint public servicePrice;
 	uint public usersCount;
 	bytes32 public publicKey;
+	bytes32 public ipfsHash;
 
-	mapping (address => user ) users;
+	mapping (address => user ) public users;
 	struct user{
 		bytes32 publicKey;
 		uint lastUpdate;
@@ -51,6 +55,10 @@ contract Service is baseContract{
 
 	function setPublicKey(bytes32 _publicKey) onlyOwner{
 		publicKey = _publicKey;
+	}
+	
+	function setIpfsHash(bytes32 _ipfsHash) onlyOwner{
+		ipfsHash = _ipfsHash;
 	}
 
 	function consume(bytes32 _publicKey, address userAddress) payable costs(servicePrice){
@@ -88,9 +96,16 @@ contract Service is baseContract{
 contract User is baseContract {
 
 	bytes32 public publicKey;
-
+	uint public money;
+	
+	uint public consumedServicesCount;
+	uint public providedServicesCount;
+	
 	mapping(address => ServiceInfo) public myConsumedServices;
 	mapping(address => ServiceInfo) public myProvidedServices;
+	
+	mapping(uint => address) public consumedService;
+	mapping(uint => address) public providedService;
 
     struct ServiceInfo{
         address serviceAddress;
@@ -106,8 +121,10 @@ contract User is baseContract {
 	function setPublicKey(bytes32 _publicKey) onlyOwner{
 		publicKey = _publicKey;
 	}
-	//this function should be payable
-    function consumeService(address _serviceAddress) onlyOwner payable{
+	function fund() onlyOwner payable{
+	    money += msg.value;    
+	}
+    function consumeService(address _serviceAddress) onlyOwner {
         if(myConsumedServices[_serviceAddress].serviceAddress == 0){
             myConsumedServices[_serviceAddress] = ServiceInfo({
                 serviceAddress:_serviceAddress,
@@ -115,6 +132,7 @@ contract User is baseContract {
                 lastUsage:now,
                 countUsage:1
             });
+            consumedServicesCount++;
         }
         else{
             myConsumedServices[_serviceAddress].lastUsage = now;
@@ -125,3 +143,4 @@ contract User is baseContract {
         myConsumedServices[_serviceAddress].publicKey = service.publicKey();
     }
 }
+
