@@ -21,6 +21,9 @@ contract baseContract{
         if (msg.value >= price) {
             _;
         }
+        else{
+            throw;
+        }
     }
 
 	function kill() onlyOwner{
@@ -34,7 +37,7 @@ contract Service is baseContract{
 	uint public usersCount;
 	bytes32 public publicKey;
 
-	mapping (address => user ) users;
+	mapping (address => user ) public users;
 	struct user{
 		bytes32 publicKey;
 		uint lastUpdate;
@@ -88,6 +91,7 @@ contract Service is baseContract{
 contract User is baseContract {
 
 	bytes32 public publicKey;
+	uint public money;
 
 	mapping(address => ServiceInfo) public myConsumedServices;
 	mapping(address => ServiceInfo) public myProvidedServices;
@@ -106,8 +110,10 @@ contract User is baseContract {
 	function setPublicKey(bytes32 _publicKey) onlyOwner{
 		publicKey = _publicKey;
 	}
-	//this function should be payable
-    function consumeService(address _serviceAddress) onlyOwner payable{
+	function fund() onlyOwner payable{
+	    money += msg.value;    
+	}
+    function consumeService(address _serviceAddress) onlyOwner {
         if(myConsumedServices[_serviceAddress].serviceAddress == 0){
             myConsumedServices[_serviceAddress] = ServiceInfo({
                 serviceAddress:_serviceAddress,
@@ -125,3 +131,4 @@ contract User is baseContract {
         myConsumedServices[_serviceAddress].publicKey = service.publicKey();
     }
 }
+
