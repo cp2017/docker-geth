@@ -21,6 +21,9 @@ contract baseContract{
         if (msg.value >= price) {
             _;
         }
+        else{
+            throw;
+        }
     }
 
 	function kill() onlyOwner{
@@ -33,8 +36,10 @@ contract Service is baseContract{
 	uint public servicePrice;
 	uint public usersCount;
 	bytes32 public publicKey;
+	bytes32 public ipfsHash;
+	uint public locked;
 
-	mapping (address => user ) users;
+	mapping (address => user ) public users;
 	struct user{
 		bytes32 publicKey;
 		uint lastUpdate;
@@ -52,6 +57,10 @@ contract Service is baseContract{
 	function setPublicKey(bytes32 _publicKey) onlyOwner{
 		publicKey = _publicKey;
 	}
+	
+	function setIpfsHash(bytes32 _ipfsHash) onlyOwner{
+		ipfsHash = _ipfsHash;
+	}
 
 	function consume(bytes32 _publicKey, address userAddress) payable costs(servicePrice){
 		if(users[userAddress].publicKey == 0){
@@ -68,19 +77,8 @@ contract Service is baseContract{
 		}
   	}
 
-    address public sendingAddress;
-    uint public sendingMoney;
-    function getMoney(address providerAddress) payable {
-        sendingAddress = providerAddress;
-        sendingMoney = msg.value;
-    }
-
-    function sendMoney() {
-    	if (!sendingAddress.send(sendingMoney)) throw;
-    }
-
 	function withdraw()onlyOwner {
-		//owner.send();
+		if (!owner.send(this.balance)) throw;
 	}
 
 }
@@ -88,9 +86,16 @@ contract Service is baseContract{
 contract User is baseContract {
 
 	bytes32 public publicKey;
-
+	uint public eth;
+	
+	uint public consumedServicesCount;
+	uint public providedServicesCount;
+	
 	mapping(address => ServiceInfo) public myConsumedServices;
 	mapping(address => ServiceInfo) public myProvidedServices;
+	
+	mapping(uint => address) public consumedServices;
+	mapping(uint => address) public providedServices;
 
     struct ServiceInfo{
         address serviceAddress;
@@ -106,8 +111,11 @@ contract User is baseContract {
 	function setPublicKey(bytes32 _publicKey) onlyOwner{
 		publicKey = _publicKey;
 	}
-	//this function should be payable
-    function consumeService(address _serviceAddress) onlyOwner payable{
+	function fund() onlyOwner payable{
+	    eth += msg.value;    
+	}
+    
+    function consumeService(address _serviceAddress) onlyOwner {
         if(myConsumedServices[_serviceAddress].serviceAddress == 0){
             myConsumedServices[_serviceAddress] = ServiceInfo({
                 serviceAddress:_serviceAddress,
@@ -115,6 +123,8 @@ contract User is baseContract {
                 lastUsage:now,
                 countUsage:1
             });
+            consumedServicesCount++;
+            consumedServices[consumedServicesCount] = _serviceAddress;
         }
         else{
             myConsumedServices[_serviceAddress].lastUsage = now;
@@ -123,5 +133,16 @@ contract User is baseContract {
         Service service = Service(_serviceAddress);
 		service.consume.value(service.servicePrice())(publicKey,owner); //not always working
         myConsumedServices[_serviceAddress].publicKey = service.publicKey();
+    }
+    
+    function deployServiceContract() onlyOwner {
+        Service newService = new Service();
+        myProvidedServices[newService] = ServiceInfo({
+                serviceAddress:newService,
+                publicKey : 0,
+                lastUsage:0,
+                countUsage:0
+        });
+        providedServicesCount++;
     }
 }
