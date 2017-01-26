@@ -30,3 +30,18 @@ miner.stop()
 serviceregistry
 userregistry
 miner.start(1)
+eth.defaultAccount = eth.coinbase
+var monitorcontractContract = web3.eth.contract([{"constant":true,"inputs":[],"name":"monitorInfoCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"buyerAddress","type":"address"},{"name":"url","type":"bytes32"}],"name":"monitor","outputs":[{"name":"monitorIndex","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"monitorResults","outputs":[{"name":"buyerAddress","type":"address"},{"name":"serviceUrl","type":"bytes32"}],"payable":false,"type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"name":"buyerAddress","type":"address"},{"indexed":false,"name":"url","type":"bytes32"}],"name":"newMonitorRecord","type":"event"}]);
+var monitorcontract = monitorcontractContract.new(
+   {
+     from: web3.eth.accounts[0], 
+     data: '0x606060405261025f806100126000396000f360606040526000357c01000000000000000000000000000000000000000000000000000000009004806366f3aa5c1461005257806374824ae41461007a578063c158f20d146100b45761004d565b610002565b34610002576100646004805050610106565b6040518082815260200191505060405180910390f35b346100025761009e600480803590602001909190803590602001909190505061010f565b6040518082815260200191505060405180910390f35b34610002576100cf6004808035906020019091905050610215565b604051808373ffffffffffffffffffffffffffffffffffffffff168152602001826000191681526020019250505060405180910390f35b60006000505481565b6000600160006000828282505401925050819055508260016000506000600060005054815260200190815260200160002060005060000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff02191690836c0100000000000000000000000090810204021790555081600160005060006000600050548152602001908152602001600020600050600101600050819055507f6dd3f0f887a2296c9fefbaba7e0678a487f03fca249d7749142ed9be66ea48a18383604051808373ffffffffffffffffffffffffffffffffffffffff168152602001826000191681526020019250505060405180910390a1600060005054905061020f565b92915050565b60016000506020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1690806001016000505490508256', 
+     gas: '4700000'
+   }, function (e, contract){
+    console.log(e, contract);
+    if (typeof contract.address !== 'undefined') {
+         console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
+    }
+ })
+miner.start(1)
+miner.stop()
