@@ -140,9 +140,11 @@ contract User is baseContract {
         myProvidedServices[newService] = ServiceInfo({
                 serviceAddress:newService,
                 publicKey : 0,
-                lastUsage:0,
+                lastUsage: 0,
                 countUsage:0
         });
         providedServicesCount++;
+        providedServices[providedServicesCount] = newService;
     }
 }
+
