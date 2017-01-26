@@ -1,6 +1,4 @@
-[![Build Status](http://wins.ddns.net:8000/api/badges/cp2017/docker-geth/status.svg)](http://wins.ddns.net:8000/cp2017/docker-geth)
-
-# Ethereum Installation
+# Ethereum Installation [![Build Status](http://ec2-54-194-144-141.eu-west-1.compute.amazonaws.com/api/badges/cp2017/docker-geth/status.svg)](http://ec2-54-194-144-141.eu-west-1.compute.amazonaws.com/cp2017/docker-geth)
 
 - [For Mac](https://github.com/ethereum/go-ethereum/wiki/Installation-Instructions-for-Mac)  
 - [For Windows](https://github.com/ethereum/go-ethereum/wiki/Installation-instructions-for-Windows)
