@@ -3,7 +3,7 @@ pragma solidity ^0.4.0;
 contract Monitor {
     
     struct monitorJob {
-        address serviceAddress;  // could change this into other address
+        address serviceAddress;  
         bytes32 serviceUrl;
         bool done;
         uint result;
@@ -13,7 +13,7 @@ contract Monitor {
     uint public jobsCount;
     
     mapping(uint => monitorJob) public monitorJobs;
-    uint []jobsAvailable;
+    uint [] public jobsAvailable;
     
     event newMonitorRecord();
     
@@ -37,9 +37,8 @@ contract Monitor {
         return uint(sha3(nonce))%(min+max)-min;
     }
       
-    event jobMonitorEvent(uint jobIndex);
+    event jobMonitorEvent(address sender,uint jobIndex);
     function getMonitorRequest(){
-        
         if(jobsAvailable.length != 0){
             uint index = rand(0,jobsAvailable.length);
             uint job = jobsAvailable[index];
