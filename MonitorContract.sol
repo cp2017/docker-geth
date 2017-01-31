@@ -31,13 +31,22 @@ contract monitorContract {
         newMonitorRecord(serviceAddress, url);
         
     }
+    uint nonce = 0;
+    function rand(uint min, uint max) public returns (uint){
+        nonce++;
+        return uint(sha3(nonce))%(min+max)-min;
+}
+    
+    
 
     event jobMonitorEvent(uint jobIndex);
     function getMonitorRequest(){
+        
         if(jobsAvailable.length != 0){
-            uint job = jobsAvailable[0];
+            uint index = rand(0,jobsAvailable.length);
+            uint job = jobsAvailable[index];
             jobMonitorEvent(job);
-            delete jobsAvailable[0];
+            delete jobsAvailable[index];
             monitorJobs[job].monitorAddress = msg.sender;
         }
     }
