@@ -45,6 +45,7 @@ contract Monitor {
             jobMonitorEvent(msg.sender,job);
             jobsAvailable[index] = jobsAvailable[jobsAvailable.length-1]; 
             delete jobsAvailable[jobsAvailable.length-1];
+            jobsAvailable.length--;
             monitorJobs[job].monitorAddress = msg.sender;
         }
     }
