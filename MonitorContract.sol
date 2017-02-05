@@ -4,7 +4,7 @@ contract Monitor {
     
     struct monitorJob {
         address serviceAddress;  
-        bytes32 serviceUrl;
+        string serviceUrl;
         bool done;
         uint result;
         address monitorAddress;
@@ -17,7 +17,7 @@ contract Monitor {
     
     event newMonitorRecord();
     
-    function submitMonitoringRequest (address serviceAddress, bytes32 url){
+    function submitMonitoringRequest (address serviceAddress, string url){
         jobsCount += 1;
         monitorJobs[jobsCount] = monitorJob({
             serviceAddress :serviceAddress,
@@ -40,10 +40,11 @@ contract Monitor {
     event jobMonitorEvent(address sender,uint jobIndex);
     function getMonitorRequest(){
         if(jobsAvailable.length != 0){
-            uint index = rand(0,jobsAvailable.length);
+            uint index = rand(0,jobsAvailable.length-1);
             uint job = jobsAvailable[index];
             jobMonitorEvent(msg.sender,job);
-            delete jobsAvailable[index];
+            jobsAvailable[index] = jobsAvailable[jobsAvailable.length-1]; 
+            delete jobsAvailable[jobsAvailable.length-1];
             monitorJobs[job].monitorAddress = msg.sender;
         }
     }
