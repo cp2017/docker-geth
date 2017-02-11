@@ -38,6 +38,10 @@ contract Service is baseContract{
 	bytes32 public publicKey;
 	bytes32 public ipfsHash;
 	uint public locked;
+	uint public activeBalance;
+	address public monitorAddress;
+	string public serviceUrl;
+	uint public sla;
 
 	mapping (address => user ) public users;
 	struct user{
@@ -53,6 +57,10 @@ contract Service is baseContract{
 	function setPrice(uint _price) onlyOwner{
 		servicePrice = _price;
 	}
+	
+	function setSla(uint _sla) onlyOwner{
+		sla = _sla;
+	}
 
 	function setPublicKey(bytes32 _publicKey) onlyOwner{
 		publicKey = _publicKey;
@@ -61,8 +69,16 @@ contract Service is baseContract{
 	function setIpfsHash(bytes32 _ipfsHash) onlyOwner{
 		ipfsHash = _ipfsHash;
 	}
+	
+	function setServiceUrl(string url) onlyOwner{
+		serviceUrl = url;
+	}
+	
+	function setMonitorAddress(address monitor) onlyOwner{
+		monitorAddress = monitor;
+	}
 
-	function consume(bytes32 _publicKey, address userAddress) payable costs(servicePrice){
+	function consume(bytes32 _publicKey, address userAddress, bool refund) payable costs(servicePrice){
 		if(users[userAddress].publicKey == 0){
 			users[userAddress] = user({
 	   			publicKey:_publicKey,
@@ -75,12 +91,27 @@ contract Service is baseContract{
 			users[userAddress].lastUpdate = now;
 			users[userAddress].countUsage += 1;
 		}
+		if(refund == true){
+		    locked++;
+		    Monitor monitor = Monitor(monitorAddress);
+		    monitor.submitMonitoringRequest.gas(5000000)(this,userAddress, serviceUrl);
+		}else{
+		    activeBalance+=servicePrice;
+		}
   	}
 
 	function withdraw()onlyOwner {
-		if (!owner.send(this.balance)) throw;
+		if (!owner.send(activeBalance)) throw;
 	}
-
+	
+	function notifyMe(address useAddress, uint result){
+	    if (result < sla){
+	        User user = User(useAddress);
+	        user.refund.value(servicePrice).gas(5000000)();
+	    }else{
+	        activeBalance+=servicePrice;
+	    }
+	}
 }
 
 contract User is baseContract {
@@ -111,11 +142,16 @@ contract User is baseContract {
 	function setPublicKey(bytes32 _publicKey) onlyOwner{
 		publicKey = _publicKey;
 	}
+	
 	function fund() onlyOwner payable{
 	    eth += msg.value;    
 	}
+	
+	function refund() payable{
+	    eth += msg.value;
+	}
     
-    function consumeService(address _serviceAddress) onlyOwner {
+    function consumeService(address _serviceAddress, bool refund) onlyOwner {
         if(myConsumedServices[_serviceAddress].serviceAddress == 0){
             myConsumedServices[_serviceAddress] = ServiceInfo({
                 serviceAddress:_serviceAddress,
@@ -131,8 +167,9 @@ contract User is baseContract {
             myConsumedServices[_serviceAddress].countUsage++;
         }
         Service service = Service(_serviceAddress);
-		service.consume.value(service.servicePrice())(publicKey,owner); //not always working
+		service.consume.value(service.servicePrice())(publicKey,owner,refund); //not always working
         myConsumedServices[_serviceAddress].publicKey = service.publicKey();
+        eth -= service.servicePrice();
     }
     
     function deployServiceContract() onlyOwner {
@@ -145,6 +182,84 @@ contract User is baseContract {
         });
         providedServicesCount++;
         providedServices[providedServicesCount] = newService;
+    }
+}
+
+contract UserRegistry is baseContract{
+    
+    mapping (address => address) public userContracts;
+    
+    function UserRegistry(){
+        owner = msg.sender;
+    }
+
+    function setUserContractAddress() {
+        if(userContracts[msg.sender] == address(0)){
+            User newUser = new User();
+            userContracts[msg.sender] = newUser;
+        }
+    }
+}
+
+contract Monitor {
+    
+    struct monitorJob {
+        address serviceAddress;  
+        string serviceUrl;
+        bool done;
+        uint result;
+        address monitorAddress;
+        address userAddress;
+    }
+    
+    uint public jobsCount;
+    
+    mapping(uint => monitorJob) public monitorJobs;
+    uint [] public jobsAvailable;
+    
+    event newMonitorRecord();
+    
+    function submitMonitoringRequest (address serviceAddress,address userAddress, string url){
+        jobsCount += 1;
+        monitorJobs[jobsCount] = monitorJob({
+            serviceAddress :serviceAddress,
+            serviceUrl : url, 
+            done : false,
+            result : 0,
+            monitorAddress: address(0),
+            userAddress : userAddress
+            
+        });
+        jobsAvailable.push(jobsCount);
+        newMonitorRecord();
+        
+    }
+    uint nonce = 0;
+    function rand(uint min, uint max) public returns (uint){
+        nonce++;
+        return uint(sha3(nonce))%(min+max)-min;
+    }
+      
+    event jobMonitorEvent(address sender,uint jobIndex);
+    function getMonitorRequest(){
+        if(jobsAvailable.length > 0){
+            uint index = rand(0,jobsAvailable.length);
+            uint job = jobsAvailable[index];
+            jobMonitorEvent(msg.sender,job);
+            jobsAvailable[index] = jobsAvailable[jobsAvailable.length-1]; 
+            delete jobsAvailable[jobsAvailable.length-1];
+            jobsAvailable.length--;
+            monitorJobs[job].monitorAddress = msg.sender;
+        }
+    }
+    
+    function saveMonitoringResults(uint jobIndex,uint result){
+        if(monitorJobs[jobIndex].monitorAddress == msg.sender){
+            monitorJobs[jobIndex].result = result;
+            monitorJobs[jobIndex].done = true;
+            Service service = Service(monitorJobs[jobIndex].serviceAddress);
+            service.notifyMe(monitorJobs[jobIndex].userAddress, result);
+        }
     }
 }
 
