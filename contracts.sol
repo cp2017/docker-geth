@@ -78,7 +78,7 @@ contract Service is baseContract{
 		monitorAddress = monitor;
 	}
 
-	function consume(bytes32 _publicKey, address userAddress, bool refund) payable costs(servicePrice){
+	function consume(bytes32 _publicKey, address userAddress, uint refund) payable costs(servicePrice){
 		if(users[userAddress].publicKey == 0){
 			users[userAddress] = user({
 	   			publicKey:_publicKey,
@@ -91,10 +91,10 @@ contract Service is baseContract{
 			users[userAddress].lastUpdate = now;
 			users[userAddress].countUsage += 1;
 		}
-		if(refund == true){
+		if(refund != 0){
 		    locked++;
 		    Monitor monitor = Monitor(monitorAddress);
-		    monitor.submitMonitoringRequest.gas(5000000)(this,userAddress, serviceUrl);
+		    monitor.submitMonitoringRequest(this,userAddress, serviceUrl);
 		}else{
 		    activeBalance+=servicePrice;
 		}
@@ -107,7 +107,7 @@ contract Service is baseContract{
 	function notifyMe(address useAddress, uint result){
 	    if (result < sla){
 	        User user = User(useAddress);
-	        user.refund.value(servicePrice).gas(5000000)();
+	        user.refund.value(servicePrice)();
 	    }else{
 	        activeBalance+=servicePrice;
 	    }
@@ -149,9 +149,9 @@ contract User is baseContract {
 	
 	function refund() payable{
 	    eth += msg.value;
-	}
+	}   
     
-    function consumeService(address _serviceAddress, bool refund) onlyOwner {
+    function consumeService(address _serviceAddress, uint refund) onlyOwner {
         if(myConsumedServices[_serviceAddress].serviceAddress == 0){
             myConsumedServices[_serviceAddress] = ServiceInfo({
                 serviceAddress:_serviceAddress,
@@ -167,7 +167,7 @@ contract User is baseContract {
             myConsumedServices[_serviceAddress].countUsage++;
         }
         Service service = Service(_serviceAddress);
-		service.consume.value(service.servicePrice())(publicKey,owner,refund); //not always working
+		service.consume.value(service.servicePrice())(publicKey,this,refund);
         myConsumedServices[_serviceAddress].publicKey = service.publicKey();
         eth -= service.servicePrice();
     }
